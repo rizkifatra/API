@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost"; // Your backend server URL
+const API_BASE_URL = "http://localhost/api"; // Your backend server URL
 
 // Function to handle login
 function login(event) {
@@ -20,8 +20,7 @@ function login(event) {
       return res.json();
     })
     .then((data) => {
-      localStorage.setItem("token", data.token);
-      window.location.href = "dashboard.html";
+      window.location.href = "home.html";
     })
     .catch((error) => {
       console.error("Login failed:", error);
@@ -31,17 +30,7 @@ function login(event) {
 
 // Fetch API Data Example
 if (document.getElementById("dataList")) {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    window.location.href = "index.html"; // Redirect to login if not authenticated
-  }
-
-  fetch(`${API_BASE_URL}/data.php`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  fetch(`${API_BASE_URL}/data.php`)
     .then((res) => {
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
@@ -64,3 +53,36 @@ if (document.getElementById("dataList")) {
 
 // Event listener for login form submission
 document.getElementById("loginForm").addEventListener("submit", login);
+
+// Function to handle registration
+function register(event) {
+  event.preventDefault();
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  fetch(`${API_BASE_URL}/register/register.php`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ username, password }),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then((data) => {
+      alert("Registration successful");
+      window.location.href = "../index.html";
+    })
+    .catch((error) => {
+      console.error("Registration failed:", error);
+      document.getElementById("registerError").textContent =
+        "Registration failed";
+    });
+}
+
+// Event listener for form submission
+document.getElementById("registerForm").addEventListener("submit", register);
