@@ -11,36 +11,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 include 'db.php'; // Make sure your db connection is correct
 
-try {
-    // Get JSON data from the request body
-    $data = json_decode(file_get_contents("php://input"), true);
-    if (!$data) {
-        throw new Exception('Invalid JSON');
-    }
+// Get JSON data from the request body
+$data = json_decode(file_get_contents("php://input"), true);
+$username = $data['username'];
+$password = $data['password'];
 
-    $username = $data['username'];
-    $password = $data['password'];
+// Check if user exists
+$stmt = $conn->prepare("SELECT id, password FROM users WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$stmt->bind_result($user_id, $password);
+$stmt->fetch();
+$stmt->close();
 
-    // Check if user exists
-    $stmt = $conn->prepare("SELECT id, password FROM users WHERE username = ? AND password = ?");
-    if (!$stmt) {
-        throw new Exception('Prepare statement failed: ' . $conn->error);
-    }
-
-    $stmt->bind_param("ss", $username, $password);
-    $stmt->execute();
-
-    $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
-        // User exists
-        echo json_encode(['message' => 'Login successful']);
-    } else {
-        // User does not exist
-        http_response_code(401);
-        echo json_encode(['error' => 'Invalid credentials']);
-    }
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
-}
-?>

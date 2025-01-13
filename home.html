@@ -4,20 +4,813 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Multi-Page Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            padding-bottom: 60px;
+            background-color: #f8f9fa;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .bottom-nav .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #6c757d;
+            text-decoration: none;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .bottom-nav .nav-link i {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+
+        .bottom-nav .nav-link span {
+            font-size: 0.75rem;
+        }
+
+        .bottom-nav .nav-link.active {
+            color: #0d6efd;
+        }
+
+        .sidebar {
+            display: none;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+
+        .sidebar .nav-link {
+            cursor: pointer;
+        }
+
+        .stat-card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .mobile-header {
+            padding: 1rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1rem;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .gold-calculator {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .price-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .calculator-form {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .weather-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .weather-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4a90e2;
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .weather-form {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .weather-result {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .weather-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .weather-detail-item {
+            text-align: center;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .pollution-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .pollution-display {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .pollution-form {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .pollution-result {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .aqi-indicator {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem auto;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .pollution-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .pollution-detail-item {
+            text-align: center;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 8px;
+        }
+
+        /* AQI colors */
+        .aqi-1 {
+            background-color: #00e400;
+        }
+
+        .aqi-2 {
+            background-color: #ffff00;
+            color: black;
+        }
+
+        .aqi-3 {
+            background-color: #ff7e00;
+        }
+
+        .aqi-4 {
+            background-color: #ff0000;
+        }
+
+        .aqi-5 {
+            background-color: #8f3f97;
+        }
+
+        .log-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            animation: fadeIn 1s;
+        }
+
+        .log-table th,
+        .log-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .log-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        .log-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .log-form input,
+        .log-form button {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .log-form button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .log-form button:hover {
+            background-color: #0056b3;
+        }
+
+        .log-message {
+            color: #28a745;
+            margin-top: 1rem;
+            animation: fadeInOut 3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .action-buttons button {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .action-buttons button:hover {
+            background-color: #f0f0f0;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding-bottom: 0;
+            }
+
+            .sidebar {
+                display: block;
+            }
+
+            .bottom-nav {
+                display: none;
+            }
+
+            .mobile-header {
+                display: none;
+            }
+
+            main {
+                margin-left: 25%;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .sidebar {
+                display: none;
+            }
+
+            .bottom-nav {
+                display: flex;
+            }
+
+            main {
+                margin-left: 0;
+                padding: 0 15px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>Welcome to the App</h1>
-        <div id="apiData">
-            <h2>API Data</h2>
-            <ul id="dataList"></ul>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-white sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h4 class="text-primary">
+                            <i class="fas fa-chart-line me-2"></i>Dashboard
+                        </h4>
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" onclick="showPage('home')">
+                                <i class="fas fa-home"></i> Overview
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="showPage('pollution')">
+                                <i class="fas fa-smog"></i> Air Pollution
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="showPage('weather')">
+                                <i class="fas fa-cloud"></i> Weather
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="showPage('gold')">
+                                <i class="fas fa-coins"></i> Gold Calculator
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Mobile Header -->
+                <div class="mobile-header d-md-none">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0" id="page-title">Overview</h5>
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-link">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="btn btn-link">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pollution -->
+                <div id="pollution" class="page">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="pollution-container">
+                                <div class="pollution-form">
+                                    <div class="mb-3">
+                                        <label for="cityInput" class="form-label">Enter City Name</label>
+                                        <input type="text" class="form-control" id="cityInput"
+                                            placeholder="Enter city name">
+                                    </div>
+
+                                    <button class="btn btn-primary w-100" onclick="getAirPollution()">Check Air
+                                        Quality</button>
+
+                                    <div class="pollution-result mt-3" id="pollutionResult" style="display: none;">
+                                        <div class="text-center">
+                                            <h3 id="cityName">City Name</h3>
+                                            <div id="aqiIndicator" class="aqi-indicator">--</div>
+                                            <div class="h4" id="aqiDescription">Air Quality Index</div>
+                                        </div>
+
+                                        <div class="pollution-details">
+                                            <div class="pollution-detail-item">
+                                                <div class="text-muted">Carbon Monoxide (CO)</div>
+                                                <div id="co">-- μg/m³</div>
+                                            </div>
+                                            <div class="pollution-detail-item">
+                                                <div class="text-muted">Nitrogen Dioxide (NO₂)</div>
+                                                <div id="no2">-- μg/m³</div>
+                                            </div>
+                                            <div class="pollution-detail-item">
+                                                <div class="text-muted">Ozone (O₃)</div>
+                                                <div id="o3">-- μg/m³</div>
+                                            </div>
+                                            <div class="pollution-detail-item">
+                                                <div class="text-muted">Sulfur Dioxide (SO₂)</div>
+                                                <div id="so2">-- μg/m³</div>
+                                            </div>
+                                            <div class="pollution-detail-item">
+                                                <div class="text-muted">PM2.5</div>
+                                                <div id="pm2_5">-- μg/m³</div>
+                                            </div>
+                                            <div class="pollution-detail-item">
+                                                <div class="text-muted">PM10</div>
+                                                <div id="pm10">-- μg/m³</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather Page -->
+                <div id="weather" class="page">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="weather-container">
+                                <div class="weather-form">
+                                    <div class="mb-3">
+                                        <label for="cityInput" class="form-label">Enter City Name</label>
+                                        <input type="text" class="form-control" id="cityInput"
+                                            placeholder="Enter city name">
+                                    </div>
+
+                                    <button class="btn btn-primary w-100" onclick="getWeather()">Get Weather</button>
+
+                                    <div class="weather-result mt-3" id="weatherResult" style="display: none;">
+                                        <div class="text-center">
+                                            <h3 id="cityName">City Name</h3>
+                                            <img id="weatherIcon" class="weather-icon" src="" alt="Weather Icon">
+                                            <div class="h2" id="temperature">--°C</div>
+                                            <div class="h4" id="weatherDescription">Weather Description</div>
+                                        </div>
+
+                                        <div class="weather-details">
+                                            <div class="weather-detail-item">
+                                                <div class="text-muted">Humidity</div>
+                                                <div id="humidity">--%</div>
+                                            </div>
+                                            <div class="weather-detail-item">
+                                                <div class="text-muted">Wind Speed</div>
+                                                <div id="windSpeed">-- m/s</div>
+                                            </div>
+                                            <div class="weather-detail-item">
+                                                <div class="text-muted">Pressure</div>
+                                                <div id="pressure">-- hPa</div>
+                                            </div>
+                                            <div class="weather-detail-item">
+                                                <div class="text-muted">Feels Like</div>
+                                                <div id="feelsLike">--°C</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gold Page -->
+                <div id="gold" class="page">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="gold-calculator">
+                                <div class="price-display mb-4">
+                                    <small class="text-muted">Current Gold Price (per gram)</small>
+                                    <div id="currentPrice">Loading...</div>
+                                </div>
+
+                                <div class="calculator-form">
+                                    <div class="mb-3">
+                                        <label for="gramInput" class="form-label">Enter Weight (grams)</label>
+                                        <input type="number" class="form-control" id="gramInput" step="0.01" min="0"
+                                            placeholder="Enter weight in grams">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="puritySelect" class="form-label">Select Gold Purity</label>
+                                        <select class="form-select" id="puritySelect">
+                                            <option value="1">24K (99.9% pure)</option>
+                                            <option value="0.91666">22K (91.67% pure)</option>
+                                            <option value="0.75">18K (75% pure)</option>
+                                            <option value="0.585">14K (58.5% pure)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="result-card mt-3" id="resultCard" style="display: none;">
+                                        <h6 class="text-muted">Calculated Price</h6>
+                                        <div class="h3" id="calculatedPrice">$0.00</div>
+                                        <small class="text-muted">Based on current market price</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
-        <button id="viewLogs">View Logs</button>
     </div>
-    <script src="script.js"></script>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a class="nav-link active" onclick="showPage('home')">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a class="nav-link" onclick="showPage('pollution')">
+            <i class="fas fa-smog"></i> Air Pollution
+        </a>
+        <a class="nav-link" onclick="showPage('weather')">
+            <i class="fas fa-cloud"></i> Weather
+        </a>
+        <a class="nav-link" onclick="showPage('gold')">
+            <i class="fas fa-coins"></i> Gold Calculator
+        </a>
+    </nav>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Update page title
+            const titles = {
+                'home': 'Overview',
+                'pollution': 'Air Pollution',
+                'weather': 'Weather',
+                'gold': 'Gold Calculator'
+            };
+            document.getElementById('page-title').textContent = titles[pageId];
+
+            // Update active nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Update both sidebar and bottom nav
+            document.querySelectorAll(`.nav-link`).forEach(link => {
+                if (link.textContent.toLowerCase().includes(titles[pageId].toLowerCase())) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Your API key should be properly secured in a production environment
+        const API_KEY = 'vAYlp86j4E4ukxwAk6O/ig==nereNCaAvyja6PYf';
+        let currentGoldPrice = 0;
+
+        // Function to fetch gold price
+        async function fetchGoldPrice() {
+            try {
+                const response = await fetch('https://api.api-ninjas.com/v1/goldprice?currency=USD', {
+                    headers: {
+                        'X-Api-Key': API_KEY
+                    }
+                });
+                const data = await response.json();
+
+                // Convert price per ounce to price per gram (1 troy oz = 31.1035 grams)
+                currentGoldPrice = data.price / 31.1035;
+
+                // Update the display
+                document.getElementById('currentPrice').textContent =
+                    `$${currentGoldPrice.toFixed(2)} USD`;
+            } catch (error) {
+                document.getElementById('currentPrice').textContent =
+                    'Error fetching price';
+                console.error('Error:', error);
+            }
+        }
+
+        // Function to calculate price based on weight and purity
+        function calculatePrice() {
+            const weight = parseFloat(document.getElementById('gramInput').value);
+            const purity = parseFloat(document.getElementById('puritySelect').value);
+
+            if (isNaN(weight) || weight <= 0) {
+                alert('Please enter a valid weight');
+                return;
+            }
+
+            const calculatedPrice = weight * currentGoldPrice * purity;
+            document.getElementById('resultCard').style.display = 'block';
+            document.getElementById('calculatedPrice').textContent =
+                `$${calculatedPrice.toFixed(2)} USD`;
+        }
+
+
+
+        // Fetch gold price when the page loads and every 5 minutes
+        fetchGoldPrice();
+        setInterval(fetchGoldPrice, 300000); // 5 minutes
+
+        // Auto-calculate when input changes
+        document.getElementById('gramInput')?.addEventListener('input', calculatePrice);
+        document.getElementById('puritySelect')?.addEventListener('change', calculatePrice);
+
+
+        // Your API key should be properly secured in a production environment
+        const WEATHER_API_KEY = '81f9510286b224b07e652a418af3e06e';
+
+        // Function to fetch weather data
+        async function getWeather() {
+            const city = document.getElementById('cityInput').value;
+
+            if (!city) {
+                alert('Please enter a city name');
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${WEATHER_API_KEY}&units=metric`);
+                const data = await response.json();
+
+                if (data.cod !== 200) {
+                    throw new Error(data.message);
+                }
+
+                // Update the weather display
+                document.getElementById('weatherResult').style.display = 'block';
+                document.getElementById('cityName').textContent = data.name;
+                document.getElementById('temperature').textContent = `${Math.round(data.main.temp)}°C`;
+                document.getElementById('weatherDescription').textContent = data.weather[0].description;
+                document.getElementById('humidity').textContent = `${data.main.humidity}%`;
+                document.getElementById('windSpeed').textContent = `${data.wind.speed} m/s`;
+                document.getElementById('pressure').textContent = `${data.main.pressure} hPa`;
+                document.getElementById('feelsLike').textContent = `${Math.round(data.main.feels_like)}°C`;
+
+                // Update weather icon
+                const iconCode = data.weather[0].icon;
+                document.getElementById('weatherIcon').src = `http://openweathermap.org/img/wn/${iconCode}@2x.png`;
+
+            } catch (error) {
+                alert('Error fetching weather data: ' + error.message);
+                console.error('Error:', error);
+            }
+        }
+
+        // Add event listener for Enter key in the input field
+        document.getElementById('cityInput')?.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                getWeather();
+            }
+        });
+
+        // AQI descriptions
+        const aqiDescriptions = {
+            1: 'Good',
+            2: 'Fair',
+            3: 'Moderate',
+            4: 'Poor',
+            5: 'Very Poor'
+        };
+
+        // Function to get coordinates from city name
+        async function getCoordinates(city) {
+            const response = await fetch(
+                `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${WEATHER_API_KEY}`
+            );
+            const data = await response.json();
+            if (!data.length) throw new Error('City not found');
+            return { lat: data[0].lat, lon: data[0].lon, name: data[0].name };
+        }
+
+        // Function to fetch air pollution data
+        async function getAirPollution() {
+            const city = document.getElementById('cityInput').value;
+
+            if (!city) {
+                alert('Please enter a city name');
+                return;
+            }
+
+            try {
+                // First get coordinates
+                const coords = await getCoordinates(city);
+
+                // Then get air pollution data
+                const response = await fetch(
+                    `http://api.openweathermap.org/data/2.5/air_pollution?lat=${coords.lat}&lon=${coords.lon}&appid=${WEATHER_API_KEY}`
+                );
+                const data = await response.json();
+
+                // Update the display
+                document.getElementById('pollutionResult').style.display = 'block';
+                document.getElementById('cityName').textContent = coords.name;
+
+                const aqi = data.list[0].main.aqi;
+                const components = data.list[0].components;
+
+                // Update AQI indicator
+                const aqiIndicator = document.getElementById('aqiIndicator');
+                aqiIndicator.textContent = aqi;
+                aqiIndicator.className = `aqi-indicator aqi-${aqi}`;
+                document.getElementById('aqiDescription').textContent = aqiDescriptions[aqi];
+
+                // Update components
+                document.getElementById('co').textContent = `${components.co.toFixed(2)} μg/m³`;
+                document.getElementById('no2').textContent = `${components.no2.toFixed(2)} μg/m³`;
+                document.getElementById('o3').textContent = `${components.o3.toFixed(2)} μg/m³`;
+                document.getElementById('so2').textContent = `${components.so2.toFixed(2)} μg/m³`;
+                document.getElementById('pm2_5').textContent = `${components.pm2_5.toFixed(2)} μg/m³`;
+                document.getElementById('pm10').textContent = `${components.pm10.toFixed(2)} μg/m³`;
+
+            } catch (error) {
+                alert('Error fetching air pollution data: ' + error.message);
+                console.error('Error:', error);
+            }
+        }
+
+        // Add event listener for Enter key in the input field
+        document.getElementById('cityInput')?.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                getAirPollution();
+            }
+        });
+
+    </script>
 </body>
 
 </html>
