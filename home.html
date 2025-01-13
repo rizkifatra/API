@@ -352,6 +352,72 @@
             background-color: #f0f0f0;
         }
 
+        .logs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .filters-section {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logs-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logs-table th,
+        .logs-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .logs-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .logs-table th:hover {
+            background: #e9ecef;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .pagination button.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .pagination button:disabled {
+            background: #e9ecef;
+            cursor: not-allowed;
+        }
+
         @media (min-width: 768px) {
             body {
                 padding-bottom: 0;
@@ -423,6 +489,11 @@
                                 <i class="fas fa-coins"></i> Gold Calculator
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="showPage('logs')">
+                                <i class="fas fa-history"></i> API Logs
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -440,6 +511,55 @@
                             <button class="btn btn-link">
                                 <i class="fas fa-bell"></i>
                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Home/Overview Page -->
+                <div id="home" class="page">
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-cloud text-primary"></i> Weather API
+                                    </h5>
+                                    <p class="card-text">Check weather conditions for any city.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-smog text-warning"></i> Air Pollution API
+                                    </h5>
+                                    <p class="card-text">Monitor air quality indices and pollutants.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-coins text-success"></i> Gold Price API
+                                    </h5>
+                                    <p class="card-text">Calculate gold prices based on weight and purity.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Add summary cards or welcome message -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>Welcome to the API Dashboard</h4>
+                            <p>Use the navigation menu to access different API features:</p>
+                            <ul>
+                                <li>Check weather conditions worldwide</li>
+                                <li>Monitor air pollution levels</li>
+                                <li>Calculate gold prices</li>
+                                <li>View API usage logs</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -583,6 +703,57 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Add Logs page -->
+                <div id="logs" class="page">
+                    <div class="logs-container">
+                        <div class="filters-section">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label for="apiFilter">API:</label>
+                                    <select id="apiFilter" class="form-control">
+                                        <option value="">All APIs</option>
+                                        <option value="gold">Gold Price</option>
+                                        <option value="weather">Weather</option>
+                                        <option value="pollution">Air Pollution</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="dateFrom">From:</label>
+                                    <input type="date" id="dateFrom" class="form-control">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="dateTo">To:</label>
+                                    <input type="date" id="dateTo" class="form-control">
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-primary mt-4" onclick="applyFilters()">Apply Filters</button>
+                                    <button class="btn btn-secondary mt-4" onclick="exportLogs()">Export CSV</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <table class="logs-table">
+                            <thead>
+                                <tr>
+                                    <th onclick="sortLogs('created_at')">Date/Time</th>
+                                    <th onclick="sortLogs('api_name')">API</th>
+                                    <th onclick="sortLogs('function_name')">Function</th>
+                                    <th onclick="sortLogs('user_id')">User ID</th>
+                                    <th>Request Data</th>
+                                    <th onclick="sortLogs('response_status')">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logsTableBody">
+                                <!-- Logs will be inserted here -->
+                            </tbody>
+                        </table>
+
+                        <div class="pagination" id="pagination">
+                            <!-- Pagination buttons will be inserted here -->
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
@@ -602,6 +773,9 @@
         <a class="nav-link" onclick="showPage('gold')">
             <i class="fas fa-coins"></i> Gold Calculator
         </a>
+        <a class="nav-link" onclick="showPage('logs')">
+            <i class="fas fa-history"></i> API Logs
+        </a>
     </nav>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
@@ -620,7 +794,8 @@
                 'home': 'Overview',
                 'pollution': 'Air Pollution',
                 'weather': 'Weather',
-                'gold': 'Gold Calculator'
+                'gold': 'Gold Calculator',
+                'logs': 'API Logs' // Add 'logs' to titles
             };
             document.getElementById('page-title').textContent = titles[pageId];
 
@@ -631,10 +806,15 @@
 
             // Update both sidebar and bottom nav
             document.querySelectorAll(`.nav-link`).forEach(link => {
-                if (link.textContent.toLowerCase().includes(titles[pageId].toLowerCase())) {
+                if (titles[pageId] && link.textContent.toLowerCase().includes(titles[pageId].toLowerCase())) {
                     link.classList.add('active');
                 }
             });
+
+            // Add this at the end of the function
+            if (pageId === 'logs') {
+                fetchLogs(); // Immediate refresh when showing logs
+            }
         }
 
         // Your API key should be properly secured in a production environment
@@ -651,6 +831,20 @@
                 });
                 const data = await response.json();
 
+                // Log the API call
+                await fetch('log_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        api_name: 'gold',
+                        function_name: 'fetchGoldPrice',
+                        request_data: JSON.stringify({ currency: 'USD' }),
+                        response_status: response.ok ? 'success' : 'error'
+                    })
+                });
+
                 // Convert price per ounce to price per gram (1 troy oz = 31.1035 grams)
                 currentGoldPrice = data.price / 31.1035;
 
@@ -658,6 +852,19 @@
                 document.getElementById('currentPrice').textContent =
                     `$${currentGoldPrice.toFixed(2)} USD`;
             } catch (error) {
+                // Log the error
+                await fetch('log_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        api_name: 'gold',
+                        function_name: 'fetchGoldPrice',
+                        request_data: JSON.stringify({ currency: 'USD' }),
+                        response_status: 'error'
+                    })
+                });
                 document.getElementById('currentPrice').textContent =
                     'Error fetching price';
                 console.error('Error:', error);
@@ -707,6 +914,20 @@
                 const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${WEATHER_API_KEY}&units=metric`);
                 const data = await response.json();
 
+                // Log the API call
+                await fetch('log_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        api_name: 'weather',
+                        function_name: 'getWeather',
+                        request_data: JSON.stringify({ city: city }),
+                        response_status: response.ok ? 'success' : 'error'
+                    })
+                });
+
                 if (data.cod !== 200) {
                     throw new Error(data.message);
                 }
@@ -726,6 +947,19 @@
                 document.getElementById('weatherIcon').src = `http://openweathermap.org/img/wn/${iconCode}@2x.png`;
 
             } catch (error) {
+                // Log the error
+                await fetch('log_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        api_name: 'weather',
+                        function_name: 'getWeather',
+                        request_data: JSON.stringify({ city: city }),
+                        response_status: 'error'
+                    })
+                });
                 alert('Error fetching weather data: ' + error.message);
                 console.error('Error:', error);
             }
@@ -776,6 +1010,20 @@
                 );
                 const data = await response.json();
 
+                // Log the API call
+                await fetch('log_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        api_name: 'pollution',
+                        function_name: 'getAirPollution',
+                        request_data: JSON.stringify({ city: city }),
+                        response_status: response.ok ? 'success' : 'error'
+                    })
+                });
+
                 // Update the display
                 document.getElementById('pollutionResult').style.display = 'block';
                 document.getElementById('cityName').textContent = coords.name;
@@ -798,6 +1046,19 @@
                 document.getElementById('pm10').textContent = `${components.pm10.toFixed(2)} μg/m³`;
 
             } catch (error) {
+                // Log the error
+                await fetch('log_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        api_name: 'pollution',
+                        function_name: 'getAirPollution',
+                        request_data: JSON.stringify({ city: city }),
+                        response_status: 'error'
+                    })
+                });
                 alert('Error fetching air pollution data: ' + error.message);
                 console.error('Error:', error);
             }
@@ -808,6 +1069,145 @@
             if (e.key === 'Enter') {
                 getAirPollution();
             }
+        });
+
+        let currentPage = 1;
+        let currentSort = 'created_at';
+        let currentOrder = 'DESC';
+
+        // Function to fetch and display logs
+        async function fetchLogs() {
+            const apiFilter = document.getElementById('apiFilter').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+
+            try {
+                const response = await fetch(`get_logs.php?page=${currentPage}&sort=${currentSort}&order=${currentOrder}` +
+                    `${apiFilter ? '&api=' + apiFilter : ''}` +
+                    `${dateFrom ? '&date_from=' + dateFrom : ''}` +
+                    `${dateTo ? '&date_to=' + dateTo : ''}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                displayLogs(data.logs);
+                updatePagination(data.total_pages, data.current_page);
+            } catch (error) {
+                console.error('Error fetching logs:', error);
+            }
+        }
+
+        // Function to display logs in table
+        function displayLogs(logs) {
+            const tbody = document.getElementById('logsTableBody');
+            tbody.innerHTML = '';
+
+            logs.forEach(log => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(log.created_at).toLocaleString()}</td>
+                    <td>${log.api_name}</td>
+                    <td>${log.function_name}</td>
+                    <td>${log.user_id}</td>
+                    <td>${log.request_data}</td>
+                    <td>${log.response_status}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Function to update pagination
+        function updatePagination(totalPages, currentPage) {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            // Previous button
+            const prevButton = document.createElement('button');
+            prevButton.textContent = 'Previous';
+            prevButton.disabled = currentPage === 1;
+            prevButton.onclick = () => goToPage(currentPage - 1);
+            pagination.appendChild(prevButton);
+
+            // Page buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.classList.toggle('active', i === currentPage);
+                pageButton.onclick = () => goToPage(i);
+                pagination.appendChild(pageButton);
+            }
+
+            // Next button
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'Next';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.onclick = () => goToPage(currentPage + 1);
+            pagination.appendChild(nextButton);
+        }
+
+        // Function to handle page navigation
+        function goToPage(page) {
+            currentPage = page;
+            fetchLogs();
+        }
+
+        // Function to handle sorting
+        function sortLogs(column) {
+            if (currentSort === column) {
+                currentOrder = currentOrder === 'ASC' ? 'DESC' : 'ASC';
+            } else {
+                currentSort = column;
+                currentOrder = 'ASC';
+            }
+            fetchLogs();
+        }
+
+        // Function to apply filters
+        function applyFilters() {
+            currentPage = 1;
+            fetchLogs();
+        }
+
+        // Update the exportLogs function
+        function exportLogs() {
+            const apiFilter = document.getElementById('apiFilter').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+
+            // Build the URL with current filters
+            let url = 'export_logs.php';
+            const params = [];
+
+            if (apiFilter) params.push(`api=${encodeURIComponent(apiFilter)}`);
+            if (dateFrom) params.push(`date_from=${encodeURIComponent(dateFrom)}`);
+            if (dateTo) params.push(`date_to=${encodeURIComponent(dateTo)}`);
+
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+
+            // Use direct window.location for download
+            window.location.href = url;
+        }
+
+        // Add this after the existing fetchLogs function
+        function startAutoRefresh() {
+            // Refresh logs every 5 seconds if logs page is active
+            setInterval(() => {
+                if (document.getElementById('logs').classList.contains('active')) {
+                    fetchLogs();
+                }
+            }, 5000);
+        }
+
+        // Initialize logs on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchLogs();
+            startAutoRefresh();
         });
 
     </script>
