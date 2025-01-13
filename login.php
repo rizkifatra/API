@@ -1,26 +1,53 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost/api"); // Replace with the origin of your frontend
-header("Access-Control-Allow-Methods: POST, OPTIONS"); // Allow POST and OPTIONS methods
-header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Allow these headers
+session_start();
+header('Content-Type: application/json');
 
-// Handle preflight request (OPTIONS)
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
+// Get POST data
+$data = json_decode(file_get_contents('php://input'), true);
+
+// Database connection
+$conn = new mysqli('localhost', 'root', '', 'user');
+
+if ($conn->connect_error) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
     exit;
 }
 
-include 'db.php'; // Make sure your db connection is correct
-
-// Get JSON data from the request body
-$data = json_decode(file_get_contents("php://input"), true);
 $username = $data['username'];
 $password = $data['password'];
 
-// Check if user exists
-$stmt = $conn->prepare("SELECT id, password FROM users WHERE username = ?");
+// Debug log
+error_log("Login attempt - Username: $username");
+
+// First, check if user exists and get their password
+$stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
-$stmt->bind_result($user_id, $password);
-$stmt->fetch();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+// Debug log
+error_log("User found: " . ($user ? 'Yes' : 'No'));
+if ($user) {
+    error_log("Stored password: " . $user['password']);
+    error_log("Provided password: " . $password);
+}
+
+// Simple direct comparison (temporary for testing)
+if ($user && $password === $user['password']) {
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['username'] = $user['username'];
+    echo json_encode(['success' => true]);
+    error_log("Login successful");
+} else {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Invalid username or password'
+    ]);
+    error_log("Login failed");
+}
+
 $stmt->close();
+$conn->close();
+?>
 

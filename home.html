@@ -458,6 +458,22 @@
 </head>
 
 <body>
+    <script>
+        // Add this at the start of your file, right after opening <body> tag
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('check_session.php');
+                const data = await response.json();
+
+                if (!data.logged_in) {
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Error checking session:', error);
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->

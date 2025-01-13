@@ -170,15 +170,15 @@
         <div class="login-box">
             <h1>Sign in to your Account</h1>
             <p class="subtitle">Enter your email and password to log in</p>
-            <form id="loginForm">
+            <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="input-group">
-                    <label for="email">Username</label>
-                    <input type="username" id="username" placeholder="Muhammad Rizki Fatra" required>
+                    <label for="username">Username</label>
+                    <input type="username" id="username" name="username" placeholder="Enter username" required>
                 </div>
                 <div class="input-group">
                     <label for="password">Password</label>
                     <div class="password-container">
-                        <input type="password" id="password" placeholder="********" required>
+                        <input type="password" id="password" name="password" placeholder="********" required>
                     </div>
                 </div>
                 <button type="submit" class="btn-primary">Log In</button>
@@ -189,7 +189,41 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            console.log('Attempting login with:', { username, password }); // Debug line
+
+            try {
+                const response = await fetch('login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                console.log('Server response:', data); // Debug line
+
+                if (data.success) {
+                    window.location.href = 'home.html';
+                } else {
+                    alert(data.message || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during login');
+            }
+        }
+    </script>
 </body>
 
 </html>
